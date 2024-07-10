@@ -1,18 +1,27 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./App.css";
 
+const CHAT_ORIGIN = "http://localhost:5173/";
+
+enum MessageType {
+  OPEN_CHAT = "openChat",
+  CLOSE_CHAT = "closeChat",
+}
+
+type OpenChatMessage = {
+  type: MessageType;
+};
+
 const App: React.FC = () => {
   const [chatOpen, setChatOpen] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
-    const handleMessage = (event: MessageEvent) => {
-      console.log("HOST SITE EVENT");
-      console.log(event.data);
-      if (event.data === "closeChat") {
+    const handleMessage = (event: MessageEvent<OpenChatMessage>) => {
+      if (event.data.type === MessageType.CLOSE_CHAT) {
         return setChatOpen(false);
       }
-      if (event.data === "openChat") {
+      if (event.data.type === MessageType.OPEN_CHAT) {
         return setChatOpen(true);
       }
     };
@@ -28,7 +37,10 @@ const App: React.FC = () => {
   const openChat = () => {
     setChatOpen(true);
     if (iframeRef.current?.contentWindow) {
-      iframeRef.current.contentWindow.postMessage("openChat", "*");
+      iframeRef.current.contentWindow.postMessage(
+        { type: MessageType.OPEN_CHAT },
+        CHAT_ORIGIN
+      );
     }
   };
 
@@ -40,7 +52,7 @@ const App: React.FC = () => {
       <main>
         <iframe
           ref={iframeRef}
-          src="http://localhost:5173/"
+          src={CHAT_ORIGIN}
           width="100%"
           height="600px"
           frameBorder="0"
