@@ -58,7 +58,6 @@ const App: React.FC = () => {
           frameBorder="0"
           title="Embedded React App"
           style={{
-            border: "2px solid red",
             maxWidth: "32rem",
             height: "100svh",
             transform: chatOpen ? "translateX(0)" : "translateX(-100%)",
